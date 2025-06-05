@@ -1,0 +1,15 @@
+Feature: Verify Created Quote On Rate Quotes Page
+
+  Scenario: Check created quote on Rate Quotes page "ACTIVE/RECENT SPOT QUOTES" table
+    Given the user is on the dashboard page
+    When user move to the rate quotes page
+    When the user will check for "ACTIVE/RECENT SPOT QUOTES" table
+    When user searches for quote in the table
+    And user should see the quote in the table on current page
+    Then the user will click on quote id
+    And the following buttons should be displayed:
+      | Send to Carriers |
+      | Add Rate         |
+      | Update Changes   |
+      | Void Quote       |
+    And the user will verify all the details of the quote
