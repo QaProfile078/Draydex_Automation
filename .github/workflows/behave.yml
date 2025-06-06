@@ -26,5 +26,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Behave tests
-      run: behave
+    - name: Run Smoke tests
+      run: py Test_Runner/Smoke_TestSuite.py --email_id admin@gofmi.com --password Password@1234 --server staging
+
