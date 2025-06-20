@@ -2,22 +2,25 @@ import argparse
 import subprocess
 
 
-def Select_Spot_to_new_quote(email_id,password,server):
+def Send_to_Carrier_for_new_quote(email_id,password,server):
     subprocess.run([
         'behave',
         'features/TC03_CreateQuote.feature',
-        'features/TC05_Add_Rate.feature',
-        'features/TC08_Select_spot.feature',
+        'features/TC03_CheckCreatedQuoteOnDashboardPage.feature',
+        'features/TC03_CheckCreatedQuoteOnRateQuotesPage.feature',
+        'features/TC04_Send_to_Carrier.feature',
         '--no-capture',
         '--define', f'EMAIL_ID={email_id}',
         '--define', f'PASSWORD={password}',
         '--define', f'SERVER={server}'
     ])
 
-def Select_Spot_to_added_rate(email_id,password,quote_id,server):
+def Send_to_Carrier_for_existing_quote(email_id,password,quote_id,server):
     subprocess.run([
         'behave',
-        'features/TC08_Select_spot.feature',
+        'features/TC03_CheckExistingQuoteOnDashboardPage.feature',
+        'features/TC03_CheckExistingQuoteOnRateQuotesPage.feature',
+        'features/TC04_Send_to_Carrier.feature',
         '--no-capture',
         '--define', f'EMAIL_ID={email_id}',
         '--define', f'PASSWORD={password}',
@@ -35,6 +38,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.quote_id:
-        Select_Spot_to_added_rate(args.email_id,args.password,args.quote_id,args.server)
+        Send_to_Carrier_for_existing_quote(args.email_id,args.password,args.quote_id,args.server)
     else:
-        Select_Spot_to_new_quote(args.email_id, args.password,args.server)
+        Send_to_Carrier_for_new_quote(args.email_id, args.password,args.server)

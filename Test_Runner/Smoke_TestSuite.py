@@ -15,7 +15,7 @@ def smoke_test_suite(email_id,password,server):
         'features/TC05_Add_Rate.feature',
         'features/TC08_Select_spot.feature',
         'features/TC07_Delete_Quote.feature',
-        # '--no-capture',
+        '--no-capture',
         '--define', f'EMAIL_ID={email_id}',
         '--define', f'PASSWORD={password}',
         '--define', f'SERVER={server}'

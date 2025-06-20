@@ -1,12 +1,10 @@
 import time
 
-from selenium.webdriver import ActionChains
+from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
-from pages.Dashboard_page import DashboardPage
 
 
 class CreatedQuoteDetails:
@@ -33,69 +31,77 @@ class CreatedQuoteDetails:
         self.phone_number_input_field_locator='//input[contains(@placeholder,"phone")]'
         self.email_input_filed_locator='//span[@class="p-multiselect-token-label"]'
         self.other_email_input_field_locator='//input[contains(@placeholder,"Enter Email")]'
+        self.filled_other_email_locator ='//div[@class="d-flex flex-wrap p-2 gap-1"]'
         self.carrier_name_suggestions_locator='//ul[@class="city-listing-css"]/li'
         self.add_more_button_locator='//label[text()="Add More"]'
+        self.cancle_buttons_locator='//i[contains(@class,"delete-icon")]'
 
         self.close_button_on_modal_locator='//div[@class="modal-body"]//button[contains(text(),"Close")]'
         self.column_entries_locator='//tbody/tr/td'
         self.close_view_log_button_locator= '//button[@class="btn close-btn"]'
 
+        self.include_all_chechbox_locator='//input[@id="flexCheckDefault"]'
+        self.submit_button_locator='//button[text()="Submit"]'
+        self.popup_locator= '//div[@role="alert"]'
+
+        self.status_list_locator='//tbody//td[2]'
+
 
     def fetch_selected_market(self):
-        selected_element = self.driver.find_element(By.XPATH, self.selected_market)
+        selected_element = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.selected_market)))
         select = Select(selected_element)
         self.quotes_details['Market'] = select.first_selected_option.text
         return self.quotes_details['Market']
 
     def fetch_selected_terminal(self):
-        selected_element = self.driver.find_element(By.XPATH, self.selected_terminal)
+        selected_element = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.selected_terminal)))
         select = Select(selected_element)
         self.quotes_details['Terminal'] = select.first_selected_option.text
         return self.quotes_details['Terminal']
 
     def fetch_selected_origin_destination(self):
-        self.quotes_details['origin_destination'] = self.driver.find_element(By.XPATH,self.selected_origin_destination).get_attribute('value')
+        self.quotes_details['origin_destination'] = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH,self.selected_origin_destination))).get_attribute('value')
         return self.quotes_details['origin_destination']
 
     def fetch_selected_equipment(self):
-        selected_element = self.driver.find_element(By.XPATH, self.selected_equipment)
+        selected_element = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.selected_equipment)))
         select = Select(selected_element)
         self.quotes_details['Equipment'] = select.first_selected_option.text
         return self.quotes_details['Equipment']
 
     def fetch_selected_special_services(self):
-        self.quotes_details['special_services'] = self.driver.find_element(By.XPATH, '//div[@class="rbt-token-label"]').text
+        self.quotes_details['special_services'] = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, '//div[@class="rbt-token-label"]'))).text
         return self.quotes_details['special_services']
 
     def fetch_filled_quantity(self):
-        self.quotes_details['Quantity'] = self.driver.find_element(By.XPATH, self.filled_quantity).get_attribute('value')
+        self.quotes_details['Quantity'] = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.filled_quantity))).get_attribute('value')
         #print(self.quotes_details['Quantity'])
         return self.quotes_details['Quantity']
 
     def fetch_filled_weight(self):
-        self.quotes_details['Weight']=self.driver.find_element(By.XPATH,self.filled_weight).get_attribute('value')
+        self.quotes_details['Weight']=WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH,self.filled_weight))).get_attribute('value')
         #print(self.quotes_details['Weight'])
         return self.quotes_details['Weight']
 
     def fetch_selected_type(self):
-        checked_radio = self.driver.find_elements(By.CSS_SELECTOR, self.selections_in_yellow)
+        checked_radio = WebDriverWait(self.driver,10).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, self.selections_in_yellow)))
 
         for labels in checked_radio:
             label_for = labels.get_attribute("id")
             for data in self.quotes_details:
                 if data.lower() in label_for.lower():
-                    self.quotes_details[data] = self.driver.find_element(By.CSS_SELECTOR, f'label[for="{label_for}"]').text
+                    self.quotes_details[data] = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, f'label[for="{label_for}"]'))).text
         #print(self.quotes_details['Type'])
         return self.quotes_details['Type']
 
     def fetch_selected_size(self):
-        checked_radio = self.driver.find_elements(By.CSS_SELECTOR, self.selections_in_yellow)
+        checked_radio = WebDriverWait(self.driver,10).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, self.selections_in_yellow)))
 
         for labels in checked_radio:
             label_for = labels.get_attribute("id")
             for data in self.quotes_details:
                 if data.lower() in label_for.lower():
-                    self.quotes_details[data] = self.driver.find_element(By.CSS_SELECTOR, f'label[for="{label_for}"]').text
+                    self.quotes_details[data] = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, f'label[for="{label_for}"]'))).text
         #print(self.quotes_details['Length'])
         if 'Length' in self.quotes_details:
             self.quotes_details['Size'] = self.quotes_details.pop('Length')
@@ -103,13 +109,13 @@ class CreatedQuoteDetails:
         return self.quotes_details['Size']
 
     def fetch_selected_weight_unit(self):
-        checked_radio = self.driver.find_elements(By.CSS_SELECTOR, self.selections_in_yellow)
+        checked_radio = WebDriverWait(self.driver,10).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, self.selections_in_yellow)))
 
         for labels in checked_radio:
             label_for = labels.get_attribute("id")
             for data in self.quotes_details:
                 if data.lower() in label_for.lower():
-                    self.quotes_details[data] = self.driver.find_element(By.CSS_SELECTOR, f'label[for="{label_for}"]').text
+                    self.quotes_details[data] = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, f'label[for="{label_for}"]'))).text
         #print(self.quotes_details['option-lbs'])
         if 'option-lbs' in self.quotes_details:
             self.quotes_details['Weight_unit'] = self.quotes_details.pop('option-lbs')
@@ -125,8 +131,8 @@ class CreatedQuoteDetails:
         return close_button.click()
 
     def click_on_Send_To_Carrier_button(self):
-        Send_To_Carrier_button = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH,self.Send_To_Carrier_button)))
-        return Send_To_Carrier_button.click()
+        Send_To_Carrier_button = WebDriverWait(self.driver,10,poll_frequency=1,ignored_exceptions=[Exception]).until(EC.element_to_be_clickable((By.XPATH,self.Send_To_Carrier_button)))
+        return ActionChains(self.driver).move_to_element(Send_To_Carrier_button).click().perform()
 
 
     def data_in_quote_details_page(self):
@@ -158,13 +164,12 @@ class CreatedQuoteDetails:
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------##
 
     def has_send_to_carrier_popup_appeared(self):
-        try:
-            WebDriverWait(self.driver,10).until(EC.invisibility_of_element_located((By.XPATH,self.Modal_locator)))
-            send_to_carrier_popup_header=WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, f'{self.Modal_locator}//h2')))
-            print(send_to_carrier_popup_header.text)
-            return "E-mail Spot Quote Request to Your Carriers" in send_to_carrier_popup_header.text
-        except:
-            return True
+        WebDriverWait(self.driver,10,poll_frequency=1, ignored_exceptions=[Exception]).until(EC.visibility_of_element_located((By.XPATH,self.Modal_locator)))
+        print("Send to Carrier Popup appeared")
+        send_to_carrier_popup_header=WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, f'{self.Modal_locator}//*[self::h2 or self::h4]')))
+        print(send_to_carrier_popup_header.text)
+        return "E-mail Spot Quote Request to Your Carriers" in send_to_carrier_popup_header.text
+
 
     def get_send_to_carrier_popup_columns(self):
         List_of_columns = []
@@ -184,6 +189,7 @@ class CreatedQuoteDetails:
             EC.visibility_of_element_located((By.XPATH, self.carrier_name_input_field_locator))
         )
         carrier_name_input_field.send_keys(carrier_name)
+        time.sleep(3)
 
         # Wait until the matching suggestion is visible and click it
         def click_matching_suggestion(driver):
@@ -206,10 +212,6 @@ class CreatedQuoteDetails:
         return final_value
 
 
-
-
-
-
     def get_filled_phone_number(self):
         phone_number_input_field=WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH,self.phone_number_input_field_locator)))
         return phone_number_input_field.get_attribute("value")
@@ -221,12 +223,20 @@ class CreatedQuoteDetails:
     def fill_other_email_field(self,email):
         other_email_input_field= WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.other_email_input_field_locator)))
         other_email_input_field.send_keys(email)
-
-        return other_email_input_field.get_attribute("value")
+        other_email_input_field.send_keys(Keys.ENTER)
+        time.sleep(5)
+        filled_other_email= WebDriverWait(self.driver,10,poll_frequency=1,ignored_exceptions=[Exception]).until(
+            EC.visibility_of_element_located((By.XPATH, self.filled_other_email_locator)))
+        print(filled_other_email.text)
+        return filled_other_email.text
 
     def click_on_add_more_button(self):
         add_more_button = WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.add_more_button_locator)))
         return add_more_button.click()
+
+    def cancel_added_carrier_details_row(self):
+        cancel= WebDriverWait(self.driver,10).until(EC.visibility_of_all_elements_located((By.XPATH, self.cancle_buttons_locator)))
+        return cancel[-1].click()
 
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------##
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------##
@@ -300,8 +310,37 @@ class CreatedQuoteDetails:
         close_view_log_button= WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH,self.close_view_log_button_locator)))
         return close_view_log_button.click()
 
+    def click_on_include_all_checkbox(self):
+        include_all_checkbox= WebDriverWait(self.driver,10,poll_frequency=1, ignored_exceptions=[Exception]).until(EC.visibility_of_element_located((By.XPATH, self.include_all_chechbox_locator)))
+        ActionChains(self.driver).move_to_element(include_all_checkbox).click().perform()
 
+        # return include_all_checkbox.click()
 
+    def submit_button_is_enabled(self):
+        submit_button= WebDriverWait(self.driver,10, poll_frequency=1, ignored_exceptions=[Exception]).until(EC.element_to_be_clickable((By.XPATH, self.submit_button_locator)))
+        return submit_button.is_enabled()
+
+    def click_on_submit_button(self):
+        submit_button = WebDriverWait(self.driver, 10, poll_frequency=1, ignored_exceptions=[Exception]).until(
+            EC.element_to_be_clickable((By.XPATH, self.submit_button_locator)))
+        return submit_button.click()
+
+    def verify_mail_sent_popup_message(self):
+        popup= WebDriverWait(self.driver,10, poll_frequency=1, ignored_exceptions=[Exception]).until(EC.visibility_of_element_located((By.XPATH, self.popup_locator)))
+        popup_message=popup.text
+        WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located((By.XPATH, self.popup_locator)))
+
+        return "Mail sent successfully" in popup_message
+
+    def is_sent_status_changed_to_yes(self):
+        status_list= WebDriverWait(self.driver,10,poll_frequency=1,ignored_exceptions=[Exception]).until(
+            EC.visibility_of_all_elements_located((By.XPATH, self.status_list_locator)))
+        statuses = []
+        for i in range(len(status_list)-1):
+            statuses.append(status_list[i].text.lower())
+
+        print(statuses)
+        return all(status == 'yes' for status in statuses)
 
 
 

@@ -179,10 +179,13 @@ class RateToClient:
         return gross_margin_is_disabled
 
     def Quote_rated_popup_message(self):
-        quote_rated_message = WebDriverWait(self.driver,10, poll_frequency=1, ignored_exceptions=[Exception]).until(EC.visibility_of_element_located((By.XPATH, self.quote_rated_successful_message_locator))).text
+        quote_rated_message = WebDriverWait(self.driver, 20, poll_frequency=1,ignored_exceptions=[Exception]).until(
+            EC.visibility_of_element_located((By.XPATH, self.quote_rated_successful_message_locator))).text
         print(quote_rated_message)
         try:
-            WebDriverWait(self.driver, 10, poll_frequency=1, ignored_exceptions=[Exception]).until(
-            EC.invisibility_of_element_located((By.XPATH, self.quote_rated_successful_message_locator)))
-        except:pass
+            WebDriverWait(self.driver, 20, poll_frequency=1, ignored_exceptions=[Exception]).until(
+                EC.invisibility_of_element_located((By.XPATH, self.quote_rated_successful_message_locator)))
+        except: pass
         return quote_rated_message
+
+

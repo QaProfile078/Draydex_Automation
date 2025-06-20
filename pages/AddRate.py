@@ -14,6 +14,7 @@ class AddRate:
         self.Add_Rate_button='//button[text()="ADD RATE"]'
         self.modal_popup= '//div[@class="modal-content"]'
         self.submit_button='//button[text()="Submit"]'
+        self.submit_button_span= '//span[text()=" Submit"]'
         self.required_messages_locator='//div[@class="text-danger"]'
 
         self.carrier_name_field_locator='//input[contains(@placeholder, "Carrier Name")]'
@@ -69,8 +70,12 @@ class AddRate:
 
 
     def click_on_submit_button(self):
-        WebDriverWait(self.driver,10).until(EC.presence_of_element_located((By.XPATH,self.submit_button)))
-        submit_button= self.driver.find_element(By.XPATH, self.submit_button)
+        try:
+            WebDriverWait(self.driver,10).until(EC.presence_of_element_located((By.XPATH,self.submit_button)))
+            submit_button= self.driver.find_element(By.XPATH, self.submit_button)
+        except:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, self.submit_button_span)))
+            submit_button = self.driver.find_element(By.XPATH, self.submit_button_span)
         return submit_button.click()
 
     def is_required_field_visible(self):

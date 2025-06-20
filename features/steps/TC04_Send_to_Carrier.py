@@ -2,6 +2,9 @@ import time
 
 from behave import given,when,then
 from pages.QuoteDetails import CreatedQuoteDetails
+from pages.Switched_window import SwitchedWindow
+from pages.common_action import CommonActions
+
 
 @when('User clicks on "Send to Carriers"')
 def step_impl(context):
@@ -10,6 +13,7 @@ def step_impl(context):
 
 @then('the "E-mail Spot Quote Request to Your Carriers" pop-up should display')
 def step_impl(context):
+    time.sleep(2)
     assert context.quote_details_page.has_send_to_carrier_popup_appeared(), 'No Popup appeared with "E-mail Spot Quote Request to Your Carriers" header'
 
 @then('the following columns should be displayed')
@@ -43,36 +47,56 @@ def step_impl(context):
 
 @then('User should be able to enter an email in the "Other Email" section')
 def step_impl(context):
-
+    global other_email
     other_email = context.quote_details_page.fill_other_email_field("testuser078@yopmail.com")
+    time.sleep(5)
 
 
 @then('User should be able to select multiple carriers using Add more button')
 def step_impl(context):
     context.quote_details_page.click_on_add_more_button()
+    time.sleep(2)
+    context.quote_details_page.cancel_added_carrier_details_row()
 
 
-@then('User should be able to check the "Include" column to send an email to a particular carrier or select the "Select ALL" checkbox to send the email to all carriers')
+@then('User should be able to check the "Include" column')
 def step_impl(context):
-    pass
-
+    context.quote_details_page.click_on_include_all_checkbox()
 
 @then('User should be able to press the "Submit" button to send the email to a carrier')
 def step_impl(context):
-    pass
+    assert context.quote_details_page.submit_button_is_enabled(), f'submit button is not enabled yet'
 
 
 @when('User presses the "Submit" button')
 def step_impl(context):
-    pass
-
+    context.quote_details_page= CreatedQuoteDetails(context)
+    context.quote_details_page.click_on_submit_button()
+    context.common_actions= CommonActions(context)
+    context.common_actions.has_loader_disappeared()
 
 @when('User should see "Mail sent to carrier" popup message')
 def step_impl(context):
-    pass
+    assert context.quote_details_page.verify_mail_sent_popup_message(), f'"Mail sent to carrier" message did not appear'
 
-
-@then('the "Sent?" status should be displayed as "Yes" for all the carriers to which mail has been sent')
+@then('the "Sent?" status should be displayed as "Yes"')
 def step_impl(context):
-    pass
+    context.quote_details_page.click_on_Send_To_Carrier_button()
+    time.sleep(2)
+    assert context.quote_details_page.has_send_to_carrier_popup_appeared(), 'No Popup appeared with "E-mail Spot Quote Request to Your Carriers" header'
+
+    assert context.quote_details_page.is_sent_status_changed_to_yes(), "Sent status is still NO"
+
+
+@when('User open email id entered in other email field')
+def step_impl(context):
+    context.switched_window= SwitchedWindow(context)
+    context.switched_window.open_the_mailbox(other_email)
+    assert context.switched_window.is_on_inbox_page()
+
+
+
+
+
+
 

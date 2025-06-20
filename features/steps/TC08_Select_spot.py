@@ -219,6 +219,7 @@ def step_impl(context):
 @then('User will see an email recieved from draydex')
 def step_impl(context):
     context.switched_window.refresh_email_list()
+    print("email received success")
 
 @when('User checks if the email is received.')
 def step_impl(context):
@@ -266,8 +267,13 @@ def step_impl(context):
             assert 'select' in (Quote_details_while_creation['Terminal']).lower()
         else:
             assert context.info_in_mail['Delivery Information']['Terminal'] == 'Select Terminal' in Quote_details_while_creation['Terminal']
+    try:
+        if context.info_in_mail['Delivery Information']['Length']:
+            context.info_in_mail['Delivery Information']['Size']= context.info_in_mail['Delivery Information']['Length']
+            assert context.info_in_mail['Delivery Information']['Size'] == Quote_details_while_creation['Size'], "Length in mail is different from Length in Quote"
+    except KeyError:
+        assert context.info_in_mail['Delivery Information']['Size'] == Quote_details_while_creation['Size'], "Length in mail is different from Length in Quote"
 
-    assert context.info_in_mail['Delivery Information']['Size'] == Quote_details_while_creation['Size'], "Length in mail is different from Length in Quote"
     if Quote_details_while_creation['Weight_unit'] == "KG":
         assert float(context.info_in_mail['Delivery Information']['Weight']) == round(
             float(Quote_details_while_creation['Weight']) * 2.20462, 2) , "Weight is different from Weight in Quote"
@@ -276,22 +282,31 @@ def step_impl(context):
 
     assert int(context.info_in_mail['Delivery Information']['Quantity']) == int(Quote_details_while_creation['Quantity']), "Quantity in mail is different from Quantity in Quote"
 
-    assert float(context.info_in_mail['Rate Summary']['Linehaul'].replace("$","")) == round(float(updated_Your_charges['Linehaul($)']),2)
-    assert context.info_in_mail['Rate Summary']['FSC%'] == updated_Your_charges['FSC (%)']
+    try:
+        if context.info_in_mail['Rate Summary']: print("Rate summary present.")
+        assert float(context.info_in_mail['Rate Summary']['Linehaul'].replace("$", "")) == round(
+            float(updated_Your_charges['Linehaul($)']), 2)
+        assert context.info_in_mail['Rate Summary']['FSC%'] == updated_Your_charges['FSC (%)']
 
-    Linehaul_FSC_total= float(updated_Your_charges['Linehaul($)']) * (100.00 + float(updated_Your_charges['FSC (%)'])) / 100
-    assert float(context.info_in_mail['Rate Summary'][ 'Linehaul+FSC Total'].replace("$","")) == round(Linehaul_FSC_total,2)
+        Linehaul_FSC_total = float(updated_Your_charges['Linehaul($)']) * (
+                    100.00 + float(updated_Your_charges['FSC (%)'])) / 100
+        assert float(context.info_in_mail['Rate Summary']['Linehaul+FSC Total'].replace("$", "")) == round(
+            Linehaul_FSC_total, 2)
 
-    assert float(context.info_in_mail['Rate Summary']['Chassis/Day'].replace("$","")) == round(float(updated_Your_charges['Chassis ($/day)']),2)
+        assert float(context.info_in_mail['Rate Summary']['Chassis/Day'].replace("$", "")) == round(
+            float(updated_Your_charges['Chassis ($/day)']), 2)
 
-    Applicable_Accessorials = {}
-    for key in updated_Your_charges:
-        if key not in ['Linehaul($)', 'FSC (%)', 'Chassis ($/day)', 'min_chassis_days']:
-            if ":" in key:
-                new_key = key.replace(":", "")
-            else:
-                new_key=key
-            Applicable_Accessorials[new_key] = f'${float(updated_Your_charges[key]):.2f}'
-    Applicable_Accessorials['Estimated Total'] = f'${float(updated_value_in_Estimated_total):.2f}'
+        Applicable_Accessorials = {}
+        for key in updated_Your_charges:
+            if key not in ['Linehaul($)', 'FSC (%)', 'Chassis ($/day)', 'min_chassis_days']:
+                if ":" in key:
+                    new_key = key.replace(":", "")
+                else:
+                    new_key = key
+                Applicable_Accessorials[new_key] = f'${float(updated_Your_charges[key]):.2f}'
+        Applicable_Accessorials['Estimated Total'] = f'${float(updated_value_in_Estimated_total):.2f}'
 
-    assert Applicable_Accessorials == context.info_in_mail['Applicable Accessorials']
+        assert Applicable_Accessorials == context.info_in_mail['Applicable Accessorials']
+
+    except KeyError:
+        assert context.info_in_mail['Special Services Requested']['Special Services'] == Quote_details_while_creation['special_services']

@@ -13,7 +13,8 @@ class SwitchedWindow:
         self.open_email_button_locator='//button[@class="md"]'
         self.refresh_button_locator='//button[@id="refresh"]'
         self.first_email_locator='//button[@class="lm"]'
-        self.quote_id_in_mail_locator='//td/a[contains(text(),"Quote")]'
+        self.quote_id_in_mail_locator_for_select_spot='//td//a[contains(text(),"Quote")]'
+        self.quote_id_in_mail_locator_for_send_to_carrier='//td//u[contains(text(),"Quote")]'
         self.iframe_locator= '(//iframe[1])'
         self.informationtype_locator='//strong/parent::*'
         self.forgot_password_heading_locator='//td[contains(text(),"Forgot Password")]'
@@ -66,11 +67,16 @@ class SwitchedWindow:
                 self.driver.switch_to.default_content()
                 self.refresh_email_list()
                 count=count+1
+        print("email received")
         return count < 5
 
     def get_quote_number_from_mail(self):
         move_to_mail_details= self.driver.switch_to.frame(self.driver.find_element(By.XPATH,f'{self.iframe_locator}[2]'))
-        Quote_id= WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.quote_id_in_mail_locator)))
+        try:
+            Quote_id= WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.quote_id_in_mail_locator_for_select_spot)))
+        except:
+            Quote_id= WebDriverWait(self.driver,10).until(EC.visibility_of_element_located((By.XPATH, self.quote_id_in_mail_locator_for_send_to_carrier)))
+
         return Quote_id.text
 
     def is_forgot_password_heading_present_in_mail(self):
@@ -94,21 +100,23 @@ class SwitchedWindow:
         for i in range(len(all_informationtypes)):
             value.append(self.driver.find_element(By.XPATH, f'({self.informationtype_locator})[{i + 1}]').text)
 
+        print(value)
+
         result = {}
         current_section = None
 
         for item in value:
-            if item in ['Pickup Information', 'Delivery Information', 'Rate Summary', 'Applicable Accessorials']:
-                current_section = item
+            if item.strip() in ['Pickup Information', 'Delivery Information', 'Rate Summary', 'Applicable Accessorials']:
+                current_section = item.strip()
                 result[current_section] = {}
             elif ':' in item:
                 key, value = item.split(': ', 1)
                 if current_section:
-                    result[current_section][key] = value
+                    result[current_section][key.strip()] = value
                 else:
-                    result[key] = value
+                    result[key.strip()] = value
             else:
-                current_section = item
+                current_section = item.strip()
                 result[current_section] = {}
 
         print("\n Data Present in mail under different sections : \n",result)

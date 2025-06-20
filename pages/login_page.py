@@ -23,10 +23,13 @@ class LoginPage:
     def open(self,context):
         if context.server == "uat":
             self.driver.get(self.uat_url)
-        if context.server == "staging":
+        elif context.server == "staging":
             self.driver.get(self.staging_url)
-        if context.server == "prod":
+        elif context.server == "prod":
             self.driver.get(self.prod_url)
+        else:
+            self.driver.get(self.uat_url)
+            # self.driver.get(self.staging_url)
 
     def login(self, username, password):
         self.driver.find_element(By.XPATH, "//input[@name='username']").send_keys(username)
